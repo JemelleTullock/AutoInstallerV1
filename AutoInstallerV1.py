@@ -1,17 +1,21 @@
 import os
+import subprocess
 import time
 
 os.system("title AutoInstallerV1")
 
 # Change app_dirs to directory of the application you'd like to install
-app_dirs = ["C:/test", "C:/test2"]
+app_dirs = ["C:/test"]
 
 for app_dir in app_dirs:
     for filename in os.listdir(app_dir):
         filepath = os.path.join(app_dir, filename)
-        if os.path.isfile(filepath) and filename.endswith(".exe"):
+        if os.path.isfile(filepath) and (filename.endswith(".exe") or filename.endswith(".msi")):
             print(f"\033[32mInstalling {filename}...\033[0m")
-            os.system(filepath)
+            try:
+                subprocess.run([filepath, "/quiet", "/norestart"], check=True)
+            except subprocess.CalledProcessError as e:
+                print(f"\033[31mInstallation of {filename} failed with exit code {e.returncode}\033[0m")
         else:
             print(f"\033[33mSkipping {filename} (not an executable file)\033[0m")
 
